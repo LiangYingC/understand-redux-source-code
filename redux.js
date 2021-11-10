@@ -1,6 +1,7 @@
 window.Redux = {
   createStore(reducer, preloadedState) {
     let currentState = preloadedState;
+    let currentReducer = reducer;
     let isDispatching = false;
 
     function getState() {
@@ -15,7 +16,20 @@ window.Redux = {
       return currentState;
     }
 
-    function dispatch() {}
+    function dispatch(action) {
+      if (isDispatching) {
+        throw new Error(
+          "Reducers may not dispatch actions when isDispatching."
+        );
+      }
+
+      try {
+        isDispatching = true;
+        currentState = currentReducer(currentState, action);
+      } finally {
+        isDispatching = false;
+      }
+    }
 
     function subscribe() {}
 
