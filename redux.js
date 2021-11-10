@@ -2,8 +2,15 @@ window.Redux = {
   createStore(reducer, preloadedState) {
     let currentState = preloadedState;
     let currentReducer = reducer;
-    let listeners = [];
+    let currentListeners = [];
+    let nextListeners = currentListeners;
     let isDispatching = false;
+
+    function ensureCanMutateNextListeners() {
+      if (nextListeners === currentListeners) {
+        nextListeners = currentListeners.slice();
+      }
+    }
 
     function getState() {
       if (isDispatching) {
@@ -31,6 +38,7 @@ window.Redux = {
         isDispatching = false;
       }
 
+      const listeners = (currentListeners = nextListeners);
       for (let i = 0; i < listeners.length; i++) {
         const listener = listeners[i];
         listener();
@@ -48,7 +56,8 @@ window.Redux = {
 
       let isSubscribed = true;
 
-      listeners.push(listener);
+      ensureCanMutateNextListeners();
+      nextListeners.push(listener);
 
       return function unsubscribe(listener) {
         if (!isSubscribed) {
@@ -61,8 +70,9 @@ window.Redux = {
           );
         }
 
-        const index = listeners.indexOf(listener);
-        listeners.splice(index, 1);
+        ensureCanMutateNextListeners();
+        const index = nextListeners.indexOf(listener);
+        nextListeners.splice(index, 1);
 
         isSubscribed = false;
       };
