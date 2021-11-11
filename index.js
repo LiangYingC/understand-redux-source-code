@@ -1,4 +1,6 @@
 /* const { createStore } = Redux; (can open this when use real redux at index.html) */
+
+// use createStore from window.Redux which doing by myself
 const { createStore } = window.Redux;
 
 const initialState = {
