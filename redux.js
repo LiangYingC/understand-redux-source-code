@@ -78,6 +78,13 @@ window.Redux = {
       };
     }
 
+    const randomString = () =>
+      Math.random().toString(36).substring(7).split("").join(".");
+
+    dispatch({
+      type: `INIT${randomString()}`,
+    });
+
     const store = {
       getState,
       dispatch,
