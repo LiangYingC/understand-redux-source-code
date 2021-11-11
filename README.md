@@ -1,8 +1,8 @@
-# Implement Simple Redux After Reading Redux Source Code
+# Implement Simple Redux CreateStore After Reading Redux Source Code
 
 Try to understand core api of redux (getState / dispatch / subscribe) by implementing simple redux.
 
-Can focus on redux.js and index.js logic.
+Can focus on `redux.js` and `index.js` logic.
 
 ## Steps
 
