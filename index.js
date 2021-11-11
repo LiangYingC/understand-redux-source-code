@@ -1,4 +1,4 @@
-const { createStore } = Redux;
+const { createStore } = window.Redux;
 
 const initialState = {
   points: 0,
@@ -21,8 +21,12 @@ const reducer = (state = initialState, action) => {
   }
 };
 
+const preloadedState = {
+  points: 0,
+};
+
 // create store by redux
-const store = createStore(reducer);
+const store = createStore(reducer, preloadedState);
 
 // plus points by store.dispatch after click plus points btn
 document.getElementById("plus-points-btn").addEventListener("click", () => {
