@@ -9,7 +9,7 @@ Can focus on `redux.js` and `index.js` logic.
 ### Step 1 : Define input and output of createStore function
 
 1. Input : reducer and preloadedState.
-2. Output : an store object contain getState、subscripe、dispatch API.
+2. Output : an store object contain getState、subscribe、dispatch API.
 
 ```javascript
 window.Redux = {
@@ -85,7 +85,7 @@ createStore(reducer, preloadedState) {
 }
 ```
 
-### Step 4 : Implment subscripe API to call listener after state changed by dispatching
+### Step 4 : Implment subscribe API to call listener after state changed by dispatching
 
 1. Initialize listeners array list to be [].
 2. Push the listener into listeners when call subscribe and return unsubscribe function which can remove the listener from listeners.
