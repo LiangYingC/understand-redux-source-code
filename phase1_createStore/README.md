@@ -1,255 +1,182 @@
-# Implement Simple Redux CreateStore After Reading Redux Source Code
+# 理解 Redux 原始碼：phase1_createStore
 
-Try to understand core api of redux (getState / dispatch / subscribe) by implementing simple redux.
+> 如有時間，建議搭配 [理解 Redux 原始碼 (一)：來實作 createStore 的 getState、dispatch、subscribe 吧](https://www.programfarmer.com/articles/sourceCode/redux-make-createStore-getState-dispatch-subscribe) 閱讀。
 
-In this project, i make a simple points counter app by `index.html`, `index.css` and `index.js` which is used `redux createStore` made by myself.
+## 檔案結構
 
-If u just want to know how to make simple `redux createStore`, can focus on `README.md` amd `createStore.js` files.
+- createStore.js：最核心的程式碼，實做 `getState`、`dispatch`、`subscribe`API。
+- app.js：使用 `createStore.js` 管控應用程式的資料以及資料更新邏輯。
+- app.html：應用程式的 html，可以透過 live server 打開玩玩看，無需太關注。
+- app.css：應用程式的 css，無需關注。
 
-If u want to read how to make simple `redux createStore` article in Traditional Chinese (zh-tw), can click [理解 Redux 原始碼：來實作簡單的 Redux createStore 吧](http://localhost:3000/articles/javaScript/javascript-make-simple-redux-createStore).
-
-## Steps of making simple createStore
-
-### Step 1 : Define input and output of createStore function
-
-1. Input : reducer and preloadedState.
-2. Output : an store object contain getState、subscribe、dispatch API.
+## createStore.js 解釋
 
 ```javascript
-createStore(reducer, preloadedState) {
+/*** createStore.js file ***/
+function createStore(reducer, preloadedState) {
+  // currentState 就是核心的 store state，初始的 preloadedState 由外部傳入
+  let currentState = preloadedState
+  // currentReducer 就是更新 state 會使用的 reducer，由外部傳入
+  let currentReducer = reducer
+  // currentListeners 以及 nextListeners 是為了 subscribe 功能而設計
+  let currentListeners = []
+  let nextListeners = currentListeners
+  // isDispatching flag 是為了避免 reducer 中使用 getState、dispatch、subscribe 而設計
+  let isDispatching = false
 
-  function getState() {};
+  // ensureCanMutateNextListeners 利用淺拷貝，確保 nextListeners 以及 currentListeners 第一層指向不同來源
+  function ensureCanMutateNextListeners() {
+    if (nextListeners === currentListeners) {
+      nextListeners = currentListeners.slice()
+    }
+  }
 
-  function dispatch() {};
-
-  function subscribe() {};
-
-  const store = {
-    getState,
-    dispatch,
-    subscribe,
-  };
-
-  return store;
-};
-```
-
-### Step 2 : Implment getState API to get store state
-
-1. Declare currentState and assign preloadedState value.
-2. Implement getState function and will return currentState.
-
-```javascript
-createStore(reducer, preloadedState) {
-  let currentState = preloadedState;
-
+  // 外部可透過 store.getState 取得 store state
   function getState() {
+    if (isDispatching) {
+      throw new Error(
+        'You may not call store.getState() while the reducer is executing. ' +
+          'The reducer has already received the state as an argument. ' +
+          'Get the state from the top reducer instead of reading it from the store.',
+      )
+    }
+
     return currentState
-  };
+  }
 
-  function dispatch() {};
-
-  function subscribe() {};
-
-  const store = {
-    getState,
-    dispatch,
-    subscribe,
-  };
-
-  return store;
-}
-```
-
-### Step 3 : Implment dispatch API to change store state
-
-1. Initialize currentReducer to be reducer to memoize current reducer.
-2. Declare isDispatching flag to know currentReducer is executing or not.
-3. When isDispatching is true, getState and dispatch will throw err message.
-4. Let isDispatching be true before executing currentReducer and be false after executing currentReducer.
-5. Execute currentReducer(currentState, action) will return new store state.
-
-```javascript
-createStore(reducer, preloadedState) {
-  ...
-  let currentReducer = reducer;
-  let isDispatching = false;
-
-  function getState() {
-    // when reducer executing, throw error message.
-    if (isDispatching) {
-        throw new Error(
-          "You may not call store.getState() while the reducer is executing. " +
-            "The reducer has already received the state as an argument. " +
-            "Get the state from the top reducer instead of reading it from the store."
-        );
-      }
-
-      return currentState;
-  };
-
+  // 外部透過 store.dispatch(action) 改變 store state
   function dispatch(action) {
-    // when reducer executing, throw error message.
     if (isDispatching) {
-        throw new Error(
-          "Reducers may not dispatch actions when isDispatching."
-        );
+      throw new Error('Reducers may not dispatch actions when isDispatching.')
     }
 
     try {
-        // turn isDispatching to true before executing currentReducer
-        isDispatching = true;
-        // execute currentReducer(currentState, action) will return new state
-        currentState = currentReducer(currentState, action);
+      isDispatching = true
+      // 透過 currentReducer 的執行，返回更新後的 store state
+      currentState = currentReducer(currentState, action)
     } finally {
-        // turn isDispatching to false after executing currentReducer
-        isDispatching = false;
+      isDispatching = false
     }
-  };
-  ...
-}
-```
 
-### Step 4 : Implment subscribe API to call listener after state changed in dispatch function
+    // store state 更新後，先更新 currentListeners，接著觸發所有訂閱的 listener
+    const listeners = (currentListeners = nextListeners)
+    for (let i = 0; i < listeners.length; i++) {
+      const listener = listeners[i]
+      listener()
+    }
+  }
 
-1. Decare listeners and assign [].
-2. Push the listener into listeners when call subscribe and return unsubscribe which can remove the listener from listeners.
-3. Deal with dispatching situation by throwing error message.
-4. Execute all subscribed listeners at the last step of dispatching.
-
-```javascript
-createStore(reducer, preloadedState) {
-  ......
-  let listeners = [];
-
+  // 外部透過 store.subscribe(listener) 訂閱、 unsubscribe(listener) 取消訂閱 listener
   function subscribe(listener) {
-    // when reducer executing, throw error message.
     if (isDispatching) {
       throw new Error(
-        "You may not call store.subscribe() while the reducer is executing. " +
-          "If you would like to be notified after the store has been updated, " +
-          "subscribe from a component and invoke store.getState() in the callback to access the latest state."
-      );
+        'You may not call store.subscribe() while the reducer is executing. ' +
+          'If you would like to be notified after the store has been updated, ' +
+          'subscribe from a component and invoke store.getState() in the callback to access the latest state.',
+      )
     }
 
-    let isSubscribed = true;
+    let isSubscribed = true
 
-    // add listener to listeners
-    listeners.push(listener);
+    // 將新的 listener 添加到 nextListeners 前，先確保 currentListeners 與 nextListeners 不同
+    ensureCanMutateNextListeners()
+    nextListeners.push(listener)
 
-    return function unsubscribe() {
+    return function unsubscribe(listener) {
       if (!isSubscribed) {
-        return;
+        return
       }
 
-      // when reducer executing, throw error message.
       if (isDispatching) {
         throw new Error(
-          "You may not unsubscribe from a store listener while the reducer is executing. "
-        );
+          'You may not unsubscribe from a store listener while the reducer is executing. ',
+        )
       }
 
-      // remove listener from listeners
-      const index = listeners.indexOf(listener);
-      listeners.splice(index, 1);
+      // 將 listener 從 nextListeners 移除前，先確保 currentListeners 與 nextListeners 不同
+      ensureCanMutateNextListeners()
+      const index = nextListeners.indexOf(listener)
+      nextListeners.splice(index, 1)
 
-      isSubscribed = false;
-    };
-  }
-
-  function dispatch(action) {
-    ...
-    // execute every listener after store state changed
-    for (let i = 0; i < listeners.length; i++) {
-      const listener = listeners[i];
-      listener();
-    }
-  }
-  ...
-}
-```
-
-### Step 5 : Fix bugs when trying to subscribe / unsubscribe inside subscribe listener callback.
-
-1. Some bugs will happended when trying to change listeners (add or remove listener) during listeners is executing on dispatch last step.
-2. Create currentListeners and nextListeners to handle this stiuation.
-   - currentListeners : stable, will be execute on dispatching last step.
-   - nextListeners : unstable, will be add and remove listener on subscribe and unsubscribe.
-3. Create ensureCanMutateNextListeners function to use shadow copy to make sure currentListeners and nextListeners will be different reference.
-4. Call ensureCanMutateNextListeners before change nextListeners.
-5. Let currentListeners = nextListeners before execute every listener on dispatching last step.
-
-```javascript
-createStore(reducer, preloadedState) {
-  ...
-  // create currentListeners and nextListeners
-  let currentListeners = [];
-  let nextListeners = currentListeners;
-
-  function getState() {...};
-
-  function dispatch(action) {
-    ...
-    // let currentListeners = nextListeners before executing every listener of currentListeners
-    const listeners = (currentListeners = nextListeners);
-    for (let i = 0; i < listeners.length; i++) {
-      const listener = listeners[i];
-      listener();
-    }
-  };
-
-  // use shadow copy to make sure nextListeners and currentListeners are different reference
-  function ensureCanMutateNextListeners() {
-    if (nextListeners === currentListeners) {
-      nextListeners = currentListeners.slice();
+      isSubscribed = false
     }
   }
 
-  function subscribe(listener) {
-    ...
-    // replace listeners with nextListeners
-    // execute ensureCanMutateNextListeners before pushing listener to nextListeners
-    ensureCanMutateNextListeners();
-    nextListeners.push(listener);
-
-    return unsubscribe () {
-      ...
-      // replace listeners with nextListeners
-      // execute ensureCanMutateNextListeners before removing listener from nextListeners
-      ensureCanMutateNextListeners();
-      const index = nextListeners.indexOf(listener);
-      nextListeners.splice(index, 1);
-
-      isSubscribed = false;
-    }
-  };
-  ...
-}
-```
-
-### Step 6 : When a store is created, an "INIT" action is dispatched so that every reducer returns their initial state.
-
-1. Dispatch INIT action to returns initial state.
-2. To avoid conflicts with the INIT action type written by user, need to combine randomString and INIT word.
-
-```javascript
-createStore(reducer, preloadedState) {
-  ...
   const randomString = () =>
-    Math.random().toString(36).substring(7).split("").join(".");
+    Math.random().toString(36).substring(7).split('').join('.')
 
+  // initialize，透過 randomString() 避免與外部使用者定義的 INIT action type 撞名
   dispatch({
     type: `INIT${randomString()}`,
-  });
-  ...
+  })
+
+  const store = {
+    getState,
+    dispatch,
+    subscribe,
+  }
+
+  return store
 }
+
+export default createStore
 ```
 
-all createStore code can read on [Implement-Simple-Redux/createStore.js](https://github.com/LiangYingC/Implement-Simple-Redux/blob/master/createStore.js).
+## app.js 解釋
 
-## References articles
+```javascript
+/*** app.js file ***/
+import { createStore } from './createStore.js'
 
-- [redux repo](https://github.com/reduxjs/redux/tree/master/src)
-- [挑戰 40 分鐘實作簡易版 Redux 佐設計模式](https://modernweb.ithome.com.tw/session-inner#448)
-- [從 source code 來看 Redux 更新 state 的運行機制](https://as790726.medium.com/%E5%BE%9E-source-code-%E4%BE%86%E7%9C%8B-redux-%E7%9A%84%E9%81%8B%E8%A1%8C%E6%A9%9F%E5%88%B6-f5e0adc1b9f6)
-- [Redux 設計思想與工作原理](http://www.mdeditor.tw/pl/gZ9p/zh-tw)
+// 自定義 reducer
+const reducer = (state, action) => {
+  switch (action.type) {
+    // 如果接收到 PLUS_POINTS 的 action.type，就增加 points
+    case 'PLUS_POINTS':
+      return {
+        points: state.points + action.payload,
+      }
+    // 如果接收到 MINUS_POINTS 的 action.type，就減少 points
+    case 'MINUS_POINTS':
+      return {
+        points: state.points - action.payload,
+      }
+    default:
+      return state
+  }
+}
+
+// 將自定義的 reducer 傳入 createStore 中，藉此創建 store
+// store 會提供 getState、dispatch、subscribe API
+const preloadedState = {
+  points: 0,
+}
+const store = createStore(reducer, preloadedState)
+
+// 當 plus 按鈕被點擊時，就觸發 callback，增加 100 points
+document.getElementById('plus-points-btn').addEventListener('click', () => {
+  // 透過 dispatch { type: 'PLUS_POINTS', payload: 100 }
+  // 將 store state 中的 points 增加 100
+  store.dispatch({
+    type: 'PLUS_POINTS',
+    payload: 100,
+  })
+})
+
+// 當 minus 按鈕被點擊時，就觸發 callback，減少 100 points
+document.getElementById('minus-points-btn').addEventListener('click', () => {
+  // 透過 dispatch { type: 'MINUS_POINTS', payload: 100 }
+  // 將 store state 中的 points 減少 100
+  store.dispatch({
+    type: 'MINUS_POINTS',
+    payload: 100,
+  })
+})
+
+// 透過 subscribe 訂閱機制，當資料被更新時，就會執行傳入的 callback
+store.subscribe(() => {
+  // 透過 getState 取出最新的 points 並 render 到畫面上
+  const points = store.getState().points
+  document.getElementById('display-points-automatically').textContent = points
+})
+```
