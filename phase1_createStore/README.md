@@ -4,15 +4,17 @@
 
 ## 檔案結構
 
-- createStore.js：最核心的程式碼，實做 `getState`、`dispatch`、`subscribe`API。
-- app.js：使用 `createStore.js` 管控應用程式的資料以及資料更新邏輯。
-- app.html：應用程式的 html，可以透過 live server 打開玩玩看，無需太關注。
-- app.css：應用程式的 css，無需關注。
+- createStore.js：redux 核心原始碼，在此階段，會實作 `getState`、`dispatch`、`subscribe` API。
+- app.js：引入 `createStore.js`，創建 `store` 管控應用程式的資料以及資料更新邏輯。
+- app.html：應用程式的 html，可以透過 live server 打開玩玩看，無需過度關注。
+- app.css：應用程式的 css，完全不用關注。
 
-## createStore.js 解釋
+## createStore.js 解讀
 
 ```javascript
 /*** createStore.js file ***/
+
+// 可傳入 reducer, preloadedState，創建 store
 function createStore(reducer, preloadedState) {
   // currentState 就是核心的 store state，初始的 preloadedState 由外部傳入
   let currentState = preloadedState
@@ -122,11 +124,11 @@ function createStore(reducer, preloadedState) {
 export default createStore
 ```
 
-## app.js 解釋
+## app.js 解讀
 
 ```javascript
 /*** app.js file ***/
-import { createStore } from './createStore.js'
+import createStore from './createStore.js'
 
 // 自定義 reducer
 const reducer = (state, action) => {
