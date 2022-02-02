@@ -1,13 +1,9 @@
-/* const { createStore } = Redux; (can open this when use real redux at index.html) */
-
-// use createStore from window.Redux which doing by myself
 import createStore from "./createStore.js";
 
 const initialState = {
   points: 0,
 };
 
-// create reducer by yourself
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case "PLUS_POINTS":
@@ -28,10 +24,8 @@ const preloadedState = {
   points: 0,
 };
 
-// create store by redux
 const store = createStore(reducer, preloadedState);
 
-// plus points by store.dispatch after click plus points btn
 document.getElementById("plus-points-btn").addEventListener("click", () => {
   store.dispatch({
     type: "PLUS_POINTS",
@@ -39,7 +33,6 @@ document.getElementById("plus-points-btn").addEventListener("click", () => {
   });
 });
 
-// minus points by store.dispatch after click minus points btn
 document.getElementById("minus-points-btn").addEventListener("click", () => {
   store.dispatch({
     type: "MINUS_POINTS",
@@ -47,13 +40,11 @@ document.getElementById("minus-points-btn").addEventListener("click", () => {
   });
 });
 
-// display points automatically by store.subscribe
 store.subscribe(() => {
   document.getElementById("display-points-automatically").textContent =
     store.getState().points;
 });
 
-// display points manually by click get points button
 document.getElementById("get-points-btn").addEventListener("click", () => {
   document.getElementById("display-points-manually").textContent =
     store.getState().points;
