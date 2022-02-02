@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Implement Simple Redux</title>
+  <link rel="stylesheet" href="./app.css" />
+</head>
+<body>
+  <div>
+    <h1>Points Counter (Company Use)</h1>
+    <div class="container">
+      <button id="plus-points-btn">Plus 100 points</button>
+      <p id="display-points-automatically">0</p>
+      <button id="minus-points-btn">Minus 100 points</button>
+    </div>
+    <h1>Show Points (Customer Use)</h1>
+    <div class="container">
+      <button id="get-points-btn">Get current points</button>
+      <p id="display-points-manually">0</p>
+    </div>
+  </div>
+  <script type="module" src="./createStore.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

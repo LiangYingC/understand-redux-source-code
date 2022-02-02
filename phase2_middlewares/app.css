@@ -1,0 +1,49 @@
+body {
+  height: 100vh;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #05242b;
+  color: #efefef;
+}
+
+button {
+  margin: 10px;
+  padding: 5px 10px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  background-color: #efefef;
+  transform: scale(1);
+  transition: 0.2s;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: #eeeeee;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+h1 {
+  font-size: 26px;
+  text-align: center;
+}
+
+p{
+  font-size: 20px;
+  text-align: center;
+  width: 50px;
+}
+
+.container {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
