@@ -7,12 +7,12 @@
 - middlewares：底下包含在此階段創建的 `middleware`，如 `loggerMiddleware.js`、`catchErrMiddleware.js`、`timeRecordMiddleware.js`。
 - applyMiddleware.js：封裝整合 `middlewares` 的相關邏輯，透過 `applyMiddleware(...midlewates)` 可創建 `enhancer`。
 - createStore.js：redux 核心原始碼，在此階段，會實作傳入 `enhancer` 參數的功能。
-- app.js：引入 `createStore.js`、`applyMiddleware.js` 等，創建 `store` 管控應用程式的資料以及資料更新邏輯，在此階段，會新增 `middlewares` 相關概念。
+- app.js：引入 `applyMiddleware.js`、`createStore.js` 等，創建 `store` 管控應用程式的資料以及資料更新邏輯，在此階段，會新增 `middlewares` 相關概念。
 - compose.js：redux 自建的 `compose`，即是實踐 functional programming 的 `compose` 概念，無須過度關注。
 - app.html：應用程式的 html，可以透過 live server 打開玩玩看，無需過度關注。
 - app.css：應用程式的 css，完全不用關注。
 
-## middlewares
+## middlewares 解讀
 
 ```javascript
 /*** loggerMiddleware.js file ***/
@@ -51,7 +51,7 @@ const catchErrMiddleware = (store) => (next) => (action) => {
 export default catchErrMiddleware
 ```
 
-## applyMiddleware.js 解釋
+## applyMiddleware.js 解讀
 
 ```javascript
 /*** applyMiddleware.js file ***/
@@ -85,7 +85,7 @@ export default applyMiddleware;
 
 ```
 
-## createStore.js 解釋
+## createStore.js 解讀
 
 ```javascript
 /*** createStore.js file ***/
@@ -187,7 +187,7 @@ function createStore(reducer, preloadedState, enhancer) {
 export default createStore
 ```
 
-## app.js 解釋
+## app.js 解讀
 
 ```javascript
 /*** app.js file ***/
