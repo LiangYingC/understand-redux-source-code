@@ -3,29 +3,54 @@ import applyMiddleware from './applyMiddleware.js';
 import loggerMiddleware from './middlewares/loggerMiddleware.js';
 import timeRecordMiddleware from './middlewares/timeRecordMiddleware.js';
 import catchErrMiddleware from './middlewares/catchErrMiddleware.js';
+import combineReducers from './combineReducers.js'
 
-const initialState = {
+const preloadedState = {
   points: 0,
+  user: {
+    name: 'Liang',
+    age: 18,
+  },
 };
 
-const reducer = (state = initialState, action) => {
+const pointsReducer = (
+  state = preloadedState.points, 
+  action
+) => {
   switch (action.type) {
     case 'PLUS_POINTS':
-      return {
-        points: state.points + action.payload,
-      };
+      return state + action.payload;
     case 'MINUS_POINTS':
+      return state - action.payload;
+    default:
+      return state;
+  }
+};
+
+const userReducer = (
+  state = preloadedState.user, 
+  action
+) => {
+  switch (action.type) {
+    case 'UPDATE_NAME':
       return {
-        points: state.points - action.payload,
+        ...state,
+        name: action.name,
+      };
+    case 'UPDATE_AGE':
+      return {
+        ...state,
+        age: action.age,
       };
     default:
       return state;
   }
 };
 
-const preloadedState = {
-  points: 0,
-};
+const reducer = combineReducers({
+  points: pointsReducer,
+  user: userReducer,
+});
 
 const enhancer = applyMiddleware(
   catchErrMiddleware, 
