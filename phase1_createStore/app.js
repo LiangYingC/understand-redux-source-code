@@ -12,8 +12,7 @@ const reducer = (state = initialState, action) => {
       };
     case "MINUS_POINTS":
       return {
-        points:
-          state.points === 0 ? state.points : state.points - action.payload,
+        points: state.points - action.payload,
       };
     default:
       return state;
