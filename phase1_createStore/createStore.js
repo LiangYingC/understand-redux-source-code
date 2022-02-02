@@ -1,3 +1,5 @@
+// source: https://github.com/reduxjs/redux/blob/master/src/createStore.ts
+
 function createStore(reducer, preloadedState) {
   let currentState = preloadedState;
   let currentReducer = reducer;
