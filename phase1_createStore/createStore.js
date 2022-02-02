@@ -1,4 +1,4 @@
-export default function createStore(reducer, preloadedState) {
+function createStore(reducer, preloadedState) {
   let currentState = preloadedState;
   let currentReducer = reducer;
   let currentListeners = [];
@@ -90,3 +90,5 @@ export default function createStore(reducer, preloadedState) {
 
   return store;
 }
+
+export default createStore
