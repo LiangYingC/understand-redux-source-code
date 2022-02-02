@@ -180,3 +180,5 @@ store.subscribe(() => {
   document.getElementById('display-points-automatically').textContent = points
 })
 ```
+
+#### 如有問題，歡迎發 issue 討論，謝謝！
