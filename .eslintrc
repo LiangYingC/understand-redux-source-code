@@ -9,9 +9,12 @@
         "sourceType": "module"
     },
     "rules": {
-        "semi": ["error", "always"],
+        "block-spacing": "error",
+        "semi": "error",
         "quotes": ["error", "single"],
-        "no-unused-vars": "warn",
-        "no-var": "error"
+        "eqeqeq": "error",
+        "curly":"error", 
+        "no-var": "error",
+        "no-unused-vars": "warn"
     }
 }
