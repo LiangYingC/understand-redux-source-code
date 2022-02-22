@@ -13,10 +13,10 @@ function combineReducers(reducers) {
     if (typeof initialState === 'undefined') {
       throw new Error(
         `The slice reducer for key "${key}" returned undefined during initialization.` +
-          `If the state passed to the reducer is undefined, you must ` +
-          `explicitly return the initial state. The initial state may ` +
-          `not be undefined. If you don't want to set a value for this reducer, ` +
-          `you can use null instead of undefined.`
+          'If the state passed to the reducer is undefined, you must ' +
+          'explicitly return the initial state. The initial state may ' +
+          'not be undefined. If you don\'t want to set a value for this reducer, ' +
+          'you can use null instead of undefined.'
       );
     }
   }
@@ -37,8 +37,8 @@ function combineReducers(reducers) {
           `When called with an action of type ${
             actionType ? `"${String(actionType)}"` : '(unknown type)'
           }, the slice reducer for key "${key}" returned undefined. ` +
-            `To ignore an action, you must explicitly return the previous state. ` +
-            `If you want this reducer to hold no value, you can return null instead of undefined.`
+            'To ignore an action, you must explicitly return the previous state. ' +
+            'If you want this reducer to hold no value, you can return null instead of undefined.'
         );
       }
 

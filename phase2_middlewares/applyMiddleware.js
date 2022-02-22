@@ -1,4 +1,4 @@
-import compose from "./compose.js";
+import compose from './compose.js';
 
 const applyMiddleware = function (...middlewares) {
   return (createStore) => (reducer, preloadedState) => {

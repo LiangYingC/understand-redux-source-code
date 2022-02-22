@@ -3,7 +3,7 @@ import applyMiddleware from './applyMiddleware.js';
 import loggerMiddleware from './middlewares/loggerMiddleware.js';
 import timeRecordMiddleware from './middlewares/timeRecordMiddleware.js';
 import catchErrMiddleware from './middlewares/catchErrMiddleware.js';
-import combineReducers from './combineReducers.js'
+import combineReducers from './combineReducers.js';
 
 const preloadedState = {
   points: 0,
@@ -67,19 +67,19 @@ document.getElementById('plus-points-btn').addEventListener('click', () => {
   });
 });
 
-document.getElementById("minus-points-btn").addEventListener("click", () => {
+document.getElementById('minus-points-btn').addEventListener('click', () => {
   store.dispatch({
-    type: "MINUS_POINTS",
+    type: 'MINUS_POINTS',
     payload: 100,
   });
 });
 
 store.subscribe(() => {
-  document.getElementById("display-points-automatically").textContent =
+  document.getElementById('display-points-automatically').textContent =
     store.getState().points;
 });
 
-document.getElementById("get-points-btn").addEventListener("click", () => {
-  document.getElementById("display-points-manually").textContent =
+document.getElementById('get-points-btn').addEventListener('click', () => {
+  document.getElementById('display-points-manually').textContent =
     store.getState().points;
 });
