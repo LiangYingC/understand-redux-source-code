@@ -12,6 +12,7 @@
         "block-spacing": "error",
         "semi": "error",
         "quotes": ["error", "single"],
+        "indent": ["error", 2],
         "eqeqeq": "error",
         "curly":"error", 
         "no-var": "error",
