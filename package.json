@@ -1,0 +1,26 @@
+{
+  "name": "understand-redux-source-code",
+  "version": "1.0.0",
+  "description": "try to understand redux source code.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LiangYingC/understand-redux-source-code.git"
+  },
+  "keywords": [
+    "redux",
+    "source code"
+  ],
+  "author": "LiangC",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LiangYingC/understand-redux-source-code/issues"
+  },
+  "homepage": "https://github.com/LiangYingC/understand-redux-source-code#readme",
+  "devDependencies": {
+    "eslint": "^8.9.0"
+  }
+}
