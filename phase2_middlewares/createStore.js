@@ -2,8 +2,8 @@
 
 function createStore(reducer, preloadedState, enhancer) {
   if(enhancer){
-      const newCreateStore = enhancer(createStore);
-      return newCreateStore(reducer, preloadedState);
+    const newCreateStore = enhancer(createStore);
+    return newCreateStore(reducer, preloadedState);
   }
 
   let currentState = preloadedState;
