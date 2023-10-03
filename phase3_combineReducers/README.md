@@ -1,6 +1,6 @@
 # 理解 Redux 原始碼：phase3_combineReducers
 
-> 如有時間，建議搭配 [理解 Redux 原始碼 (三)：來實作 combineReducers 吧](https://www.programfarmer.com/articles/sourceCode/redux-make-combineReducers) 閱讀。
+> 如有時間，建議搭配 [理解 Redux 原始碼 (三)：來實作 combineReducers 吧](https://www.programfarmer.com/articles/2022/redux-make-combineReducers) 閱讀。
 
 ## 檔案結構
 
@@ -21,66 +21,66 @@
 // 定義 input 為 reducers obj，key 是 store state 的 state key ; value 是更新對應 state 的 reducer function
 function combineReducers(reducers) {
   // 取得 reducerKeys = ['points', 'user']
-  const reducerKeys = Object.keys(reducers)
+  const reducerKeys = Object.keys(reducers);
 
   for (let i = 0; i < reducerKeys.length; i++) {
-    const key = reducerKeys[i]
-    const reducer = reducers[key]
+    const key = reducerKeys[i];
+    const reducer = reducers[key];
 
     // 檢查每個 reducer 是否為 function，如果不是就報錯
-    if (typeof reducer !== 'function') {
-      throw new Error(`No reducer function provided for key "${key}"`)
+    if (typeof reducer !== "function") {
+      throw new Error(`No reducer function provided for key "${key}"`);
     }
 
     // 檢查每個 initial state 是否為 undefined，如果是就報錯
-    const initialState = reducer(undefined, { type: ActionTypes.INIT })
-    if (typeof initialState === 'undefined') {
+    const initialState = reducer(undefined, { type: ActionTypes.INIT });
+    if (typeof initialState === "undefined") {
       throw new Error(
         `The slice reducer for key "${key}" returned undefined during initialization.` +
           `If the state passed to the reducer is undefined, you must ` +
           `explicitly return the initial state. The initial state may ` +
           `not be undefined. If you don't want to set a value for this reducer, ` +
-          `you can use null instead of undefined.`,
-      )
+          `you can use null instead of undefined.`
+      );
     }
   }
 
   // 定義 ouput 為可傳入 state、action 的 combination function
   return function combination(state = {}, action) {
-    const nextState = {}
+    const nextState = {};
 
     // 遍歷執行每一個 reducer，藉此整合出最終的 newState
     for (let i = 0; i < reducerKeys.length; i++) {
-      const key = reducerKeys[i]
-      const reducer = reducers[key]
+      const key = reducerKeys[i];
+      const reducer = reducers[key];
 
       // 取得舊的 previousStateForKey
-      const previousStateForKey = state[key]
+      const previousStateForKey = state[key];
       // 執行 reducer，獲得的 nextStateForKey
-      const nextStateForKey = reducer(previousStateForKey, action)
+      const nextStateForKey = reducer(previousStateForKey, action);
       // 因為前面已檢查 reducer 的 state 傳入 undefined 時是否正常
       // 所以在此 undefined 的原因，就會是 action 有誤，因此報錯
-      if (typeof nextStateForKey === 'undefined') {
-        const actionType = action && action.type
+      if (typeof nextStateForKey === "undefined") {
+        const actionType = action && action.type;
         throw new Error(
           `When called with an action of type ${
-            actionType ? `"${String(actionType)}"` : '(unknown type)'
+            actionType ? `"${String(actionType)}"` : "(unknown type)"
           }, the slice reducer for key "${key}" returned undefined. ` +
             `To ignore an action, you must explicitly return the previous state. ` +
-            `If you want this reducer to hold no value, you can return null instead of undefined.`,
-        )
+            `If you want this reducer to hold no value, you can return null instead of undefined.`
+        );
       }
 
       // 將 nextStateForKey 整合進 nextState 中
-      nextState[key] = nextStateForKey
+      nextState[key] = nextStateForKey;
     }
 
     // 最後回傳整合完成的 nextState
-    return nextState
-  }
+    return nextState;
+  };
 }
 
-export default combineReducers
+export default combineReducers;
 ```
 
 ## app.js 解讀

@@ -1,6 +1,6 @@
 # 理解 Redux 原始碼：phase2_middlewares
 
-> 如有時間，建議搭配 [理解 Redux 原始碼 (二)：來實作 middlewares、applyMiddleware 以及 createStore enhancer 吧](https://www.programfarmer.com/articles/sourceCode/redux-make-createStore-enhancer-and-applyMiddleware) 閱讀。
+> 如有時間，建議搭配 [理解 Redux 原始碼 (二)：來實作 middlewares、applyMiddleware 以及 createStore enhancer 吧](https://www.programfarmer.com/articles/2021/redux-make-createStore-enhancer-and-applyMiddleware) 閱讀。
 
 ## 檔案結構
 
@@ -19,11 +19,11 @@
 
 // 創建 loggerMiddleware 會印出 preState 以及 newState
 const loggerMiddleware = (store) => (next) => (action) => {
-  console.log({ preState: store.getState() })
-  next(action)
-  console.log({ newState: store.getState() })
-}
-export default loggerMiddleware
+  console.log({ preState: store.getState() });
+  next(action);
+  console.log({ newState: store.getState() });
+};
+export default loggerMiddleware;
 ```
 
 ```javascript
@@ -31,10 +31,10 @@ export default loggerMiddleware
 
 // 創建 loggerMiddleware 會印出更新 state 的時間
 const timeRecordMiddleware = (store) => (next) => (action) => {
-  console.log({ time: new Date().getTime() })
-  next(action)
-}
-export default timeRecordMiddleware
+  console.log({ time: new Date().getTime() });
+  next(action);
+};
+export default timeRecordMiddleware;
 ```
 
 ```javascript
@@ -43,12 +43,12 @@ export default timeRecordMiddleware
 // 創建 loggerMiddleware 會抓出更新 state 時的錯誤
 const catchErrMiddleware = (store) => (next) => (action) => {
   try {
-    next(action)
+    next(action);
   } catch (err) {
-    console.log({ errLog: err })
+    console.log({ errLog: err });
   }
-}
-export default catchErrMiddleware
+};
+export default catchErrMiddleware;
 ```
 
 ## applyMiddleware.js 解讀
@@ -191,64 +191,64 @@ export default createStore
 
 ```javascript
 /*** app.js file ***/
-import createStore from './createStore.js'
-import applyMiddleware from './applyMiddleware.js'
-import loggerMiddleware from './loggerMiddleware.js'
-import timeRecordMiddleware from './timeRecordMiddleware.js'
-import catchErrMiddleware from './catchErrMiddleware.js'
+import createStore from "./createStore.js";
+import applyMiddleware from "./applyMiddleware.js";
+import loggerMiddleware from "./loggerMiddleware.js";
+import timeRecordMiddleware from "./timeRecordMiddleware.js";
+import catchErrMiddleware from "./catchErrMiddleware.js";
 
 // 自定義 reducer
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'PLUS_POINTS':
+    case "PLUS_POINTS":
       return {
         points: state.points + action.payload,
-      }
-    case 'MINUS_POINTS':
+      };
+    case "MINUS_POINTS":
       return {
         points: state.points - action.payload,
-      }
+      };
     default:
-      return state
+      return state;
   }
-}
+};
 
 // 透過 applyMiddleware，傳入多個 middlewares 創建 enhancer
 const enhancer = applyMiddleware(
   catchErrMiddleware,
   timeRecordMiddleware,
-  loggerMiddleware,
-)
+  loggerMiddleware
+);
 
 // 使用 createStore 傳入第三個參數 enhancer，創建 dispatch 已被擴展的 store
 const preloadedState = {
   points: 0,
-}
-const store = createStore(reducer, preloadedState, enhancer)
+};
+const store = createStore(reducer, preloadedState, enhancer);
 
 // 當 plus 按鈕被點擊時，就觸發 callback，增加 100 points
-document.getElementById('plus-points-btn').addEventListener('click', () => {
+document.getElementById("plus-points-btn").addEventListener("click", () => {
   // 此 dispatch 已可觸發 middlewares 相關功能
   store.dispatch({
-    type: 'PLUS_POINTS',
+    type: "PLUS_POINTS",
     payload: 100,
-  })
-})
+  });
+});
 
 // 當 minus 按鈕被點擊時，就觸發 callback，減少 100 points
-document.getElementById('minus-points-btn').addEventListener('click', () => {
+document.getElementById("minus-points-btn").addEventListener("click", () => {
   // 此 dispatch 已可觸發 middlewares 相關功能
   store.dispatch({
-    type: 'MINUS_POINTS',
+    type: "MINUS_POINTS",
     payload: 100,
-  })
-})
+  });
+});
 
 // 透過 subscribe 訂閱機制，當資料被更新時，就會執行傳入的 callback
 store.subscribe(() => {
-  const points = store.getState().points
-  document.getElementById('display-points-automatically').textContent = points
-})
+  const points = store.getState().points;
+  document.getElementById("display-points-automatically").textContent = points;
+});
 ```
 
 #### 如有問題，歡迎發 issue 討論，謝謝！
